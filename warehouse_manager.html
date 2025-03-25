@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý kho hàng</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h2>Quản lý kho hàng</h2>
+    <input type="text" id="productName" placeholder="Tên hàng hóa">
+    <input type="number" id="quantity" placeholder="Số lượng">
+    <button onclick="addProduct()">Thêm</button>
+    
+    <h3>Danh sách hàng hóa</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tên hàng</th>
+                <th>Số lượng</th>
+                <th>Ngày cập nhật</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="productList"></tbody>
+    </table>
+    
+    <script>
+        function loadProducts() {
+            const products = JSON.parse(localStorage.getItem("warehouse")) || [];
+            const table = document.getElementById("productList");
+            table.innerHTML = "";
+            products.forEach((product, index) => {
+                const row = `<tr>
+                    <td>${product.name}</td>
+                    <td>${product.quantity}</td>
+                    <td>${product.date}</td>
+                    <td><button onclick="removeProduct(${index})">Xóa</button></td>
+                </tr>`;
+                table.innerHTML += row;
+            });
+        }
+
+        function addProduct() {
+            const name = document.getElementById("productName").value;
+            const quantity = document.getElementById("quantity").value;
+            if (!name || quantity <= 0) return;
+            
+            const products = JSON.parse(localStorage.getItem("warehouse")) || [];
+            const date = new Date().toLocaleString();
+            products.push({ name, quantity, date });
+            localStorage.setItem("warehouse", JSON.stringify(products));
+            loadProducts();
+        }
+
+        function removeProduct(index) {
+            const products = JSON.parse(localStorage.getItem("warehouse")) || [];
+            products.splice(index, 1);
+            localStorage.setItem("warehouse", JSON.stringify(products));
+            loadProducts();
+        }
+
+        window.onload = loadProducts;
+    </script>
+</body>
+</html>
